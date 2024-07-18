@@ -24,9 +24,4 @@ public class AuthController {
             return ResponseEntity.ok(Message.builder().message(e.getMessage()).build());
         }
     }
-
-    @GetMapping("/test")
-    public ResponseEntity<?> test(){
-        return ResponseEntity.ok("Test");
-    }
 }

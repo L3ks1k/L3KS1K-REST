@@ -4,13 +4,11 @@ import com.example.l3ks1krestapi.DTO.Auth.Request.RegistrationRequest;
 import com.example.l3ks1krestapi.DTO.Auth.Response.RegistrationResponse;
 import com.example.l3ks1krestapi.Exceptions.InsecurePasswordException;
 import com.example.l3ks1krestapi.Exceptions.UserExistsException;
-import com.example.l3ks1krestapi.Model.Role;
 import com.example.l3ks1krestapi.Model.User;
 import com.example.l3ks1krestapi.Repository.UserRepository;
 import com.example.l3ks1krestapi.Security.PasswordHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,9 +26,6 @@ public class AuthenticationService {
         if (userRepository.findByEmail(request.getEmail()).isPresent()){
             throw new UserExistsException("User with provided email, already exists.");
         }
-        if (request.getPassword().equals(request.getConfirmPassword())){
-            throw new RuntimeException("Password mismatch.");
-        }
         if (passwordHandler.isOnBlackList(request.getPassword())){
             throw new InsecurePasswordException("Password was compromised.");
         }
@@ -41,7 +36,6 @@ public class AuthenticationService {
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
                 .build();
         userRepository.save(user);
         return RegistrationResponse.builder()
@@ -50,4 +44,5 @@ public class AuthenticationService {
                 .email(user.getEmail())
                 .build();
     }
+
 }

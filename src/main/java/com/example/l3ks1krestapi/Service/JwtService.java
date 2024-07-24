@@ -56,13 +56,20 @@ public class JwtService {
             Map<String, Objects> extraClaims,
             UserDetails userDetails
     ){
-        return Jwts.builder()
-                .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() * 1000 * 60 * 60 * 180)) // 180 days
-                .signWith(privateKey, SignatureAlgorithm.ES512)
-                .compact();
+        try {
+            return Jwts.builder()
+                    .setHeaderParam("typ","JWT")
+                    .setClaims(extraClaims)
+                    .claim("jti", SecureRandom.getInstanceStrong().nextLong())
+                    .setSubject(userDetails.getUsername())
+                    .setIssuer("L3KS1K")
+                    .setIssuedAt(new Date(System.currentTimeMillis()))
+                    .setExpiration(new Date(System.currentTimeMillis() * 1000 * 60 * 60 * 180)) // 180 days
+                    .signWith(privateKey, SignatureAlgorithm.ES512)
+                    .compact();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private boolean isRevoked(String token){

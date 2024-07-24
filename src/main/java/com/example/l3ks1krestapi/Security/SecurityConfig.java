@@ -20,7 +20,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authz -> authz
-                .anyRequest().permitAll());
+                .requestMatchers("/api/v1/auth/register").permitAll().requestMatchers("/api/v1/auth/login").permitAll());
+        http.authorizeHttpRequests(authz -> authz.anyRequest().authenticated());
         http.csrf(AbstractHttpConfigurer::disable);
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.authenticationProvider(authenticationProvider).addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -71,7 +71,6 @@ public class JwtService {
             throw new RuntimeException(e);
         }
     }
-
     private boolean isRevoked(String token){
         MessageDigest digest = null;
         try {

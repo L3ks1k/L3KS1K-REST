@@ -4,18 +4,25 @@ import com.example.l3ks1krestapi.DTO.Auth.Request.AuthenticationRequest;
 import com.example.l3ks1krestapi.DTO.Auth.Request.RegistrationRequest;
 import com.example.l3ks1krestapi.DTO.Auth.Response.AuthenticationResponse;
 import com.example.l3ks1krestapi.DTO.Auth.Response.RegistrationResponse;
-import com.example.l3ks1krestapi.Exceptions.InsecurePasswordException;
+import com.example.l3ks1krestapi.DTO.Message;
+import com.example.l3ks1krestapi.Exceptions.CompromisedPasswordException;
+import com.example.l3ks1krestapi.Exceptions.InvalidPasswordLengthException;
 import com.example.l3ks1krestapi.Exceptions.UserExistsException;
+import com.example.l3ks1krestapi.Model.RevokedToken;
 import com.example.l3ks1krestapi.Model.User;
+import com.example.l3ks1krestapi.Repository.RevokedTokenRepository;
 import com.example.l3ks1krestapi.Repository.UserRepository;
 import com.example.l3ks1krestapi.Security.PasswordHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 
 @Service
@@ -25,6 +32,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final RevokedTokenRepository revokedTokenRepository;
     private final PasswordHandler passwordHandler = new PasswordHandler();
     public RegistrationResponse register(RegistrationRequest request){
         String password = passwordHandler.removeRedundantSpaces(request.getPassword());
@@ -35,10 +43,10 @@ public class AuthenticationService {
             throw new UserExistsException("User with provided username, already exists.");
         }
         if (passwordHandler.isOnBlackList(password)){
-            throw new InsecurePasswordException("Password was compromised.");
+            throw new CompromisedPasswordException("Password was compromised.");
         }
         if (!(passwordHandler.checkLength(password))){
-            throw new InsecurePasswordException("Password's length must be in range <12,128>");
+            throw new InvalidPasswordLengthException("Password's length must be in range <12,128>");
         }
         var user = User.builder()
                 .username(request.getUsername())
@@ -53,17 +61,34 @@ public class AuthenticationService {
                 .build();
     }
     public AuthenticationResponse login(AuthenticationRequest request){
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
+        try{
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
+        } catch (BadCredentialsException e){
+            throw new BadCredentialsException("Bad credentials.");
+        }
+
+
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .build();
+    }
+
+    public Message revokeToken(String token) throws NoSuchAlgorithmException {
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA3-256");;
+        byte[] digest = messageDigest.digest(token.substring(7).getBytes());
+        String tokenDigest = new BigInteger(1, digest).toString(16);
+        revokedTokenRepository.save(RevokedToken.builder().revokedTokenHash(tokenDigest).build());
+        return Message.builder()
+                .message("Token revoked")
+                .errorCode("E1001")
                 .build();
     }
 

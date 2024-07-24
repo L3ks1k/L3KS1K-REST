@@ -21,7 +21,12 @@ public class AuthController {
         try{
             return ResponseEntity.ok(authenticationService.register(request));
         } catch (RuntimeException e){
+            // TODO: Application shouldn't return stack trace to the client
             return ResponseEntity.ok(Message.builder().message(e.getMessage()).build());
         }
+    }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody AuthenticationRequest request){
+        return ResponseEntity.ok(authenticationService.login(request));
     }
 }

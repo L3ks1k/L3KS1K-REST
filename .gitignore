@@ -1,3 +1,6 @@
+src/main/resources/public.der
+src/main/resources/key-pkcs8.der
+
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar

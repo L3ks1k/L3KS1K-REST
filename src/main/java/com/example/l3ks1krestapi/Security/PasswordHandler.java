@@ -1,12 +1,8 @@
 package com.example.l3ks1krestapi.Security;
 
-import com.example.l3ks1krestapi.Exceptions.InsecurePasswordException;
-import com.example.l3ks1krestapi.L3Ks1KRestApiApplication;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,7 +14,6 @@ public class PasswordHandler {
 
     public boolean isOnBlackList(String password){
         try{
-            // TODO: Find a better way to get weakpass.txt file
             URI uri = ClassLoader.getSystemResource("weakpass.txt").toURI();
             String pathStr = Paths.get(uri).toString();
             Path path = Paths.get(pathStr);
@@ -28,5 +23,8 @@ public class PasswordHandler {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
+    }
+    public String removeRedundantSpaces(String password){
+       return password.trim().replaceAll("\\s+"," ");
     }
 }

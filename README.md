@@ -14,3 +14,9 @@
 | Information Disclosure | Confidentiality   | Data Flows, Data Stores, Processes | 1. Messages or user information are considered confidential, there is a threat of other users accessing that data. 2. Files metadata, are also considered confidential, there is  a threat of other users extracting metadata.       |
 | Denial of Service      | Availability      | Data Flows, Data Stores, Processes | 1. Chat has high availability requirements, there is a threat of conducting DDoS attack by  malicious actors                                                                                                                         |
 | Elevation of Privilege | Authorization     | Processes                          | 1. User can discover vulnerability which allows to get administrative access to application.                                                                                                                                         |
+## Authentication mechanism
+
+Authentication is based on JWT.
+
+![image](https://github.com/user-attachments/assets/9c95aff7-c7b3-4a16-ae76-babaa05fd24b)
+

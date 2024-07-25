@@ -1,9 +1,12 @@
 package com.example.l3ks1krestapi.Service;
 
 import com.example.l3ks1krestapi.DTO.Auth.Request.AuthenticationRequest;
+import com.example.l3ks1krestapi.DTO.Auth.Request.ChangePasswordRequest;
 import com.example.l3ks1krestapi.DTO.Auth.Request.RegistrationRequest;
 import com.example.l3ks1krestapi.DTO.Auth.Response.AuthenticationResponse;
+import com.example.l3ks1krestapi.DTO.Auth.Response.ChangePasswordResponse;
 import com.example.l3ks1krestapi.DTO.Auth.Response.RegistrationResponse;
+import com.example.l3ks1krestapi.DTO.Auth.Response.RevokeResponse;
 import com.example.l3ks1krestapi.DTO.Message;
 import com.example.l3ks1krestapi.Exceptions.CompromisedPasswordException;
 import com.example.l3ks1krestapi.Exceptions.InvalidPasswordLengthException;
@@ -81,14 +84,28 @@ public class AuthenticationService {
                 .build();
     }
 
-    public Message revokeToken(String token) throws NoSuchAlgorithmException {
+    public RevokeResponse revokeToken(String token) throws NoSuchAlgorithmException {
         MessageDigest messageDigest = MessageDigest.getInstance("SHA3-256");;
         byte[] digest = messageDigest.digest(token.substring(7).getBytes());
         String tokenDigest = new BigInteger(1, digest).toString(16);
         revokedTokenRepository.save(RevokedToken.builder().revokedTokenHash(tokenDigest).build());
-        return Message.builder()
+        return RevokeResponse.builder()
                 .message("Token revoked")
-                .errorCode("E1001")
+                .build();
+    }
+    public ChangePasswordResponse changePassword(String token, ChangePasswordRequest request){
+        String username = jwtService.extractUsername(token);
+        var user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        if (passwordHandler.isOnBlackList(request.getNewPassword())){
+            throw new CompromisedPasswordException("Password was compromised.");
+        }
+        if (!(passwordHandler.checkLength(request.getNewPassword()))){
+            throw new InvalidPasswordLengthException("Password's length must be in range <12,128>");
+        }
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+        return ChangePasswordResponse.builder()
+                .message("Password changed")
                 .build();
     }
 

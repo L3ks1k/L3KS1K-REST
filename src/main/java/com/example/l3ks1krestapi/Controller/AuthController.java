@@ -69,7 +69,7 @@ public class AuthController {
     @PostMapping("/changePassword")
     public ResponseEntity<?> changePassword(@RequestHeader("Authorization") String token, @RequestBody ChangePasswordRequest request) {
         try {
-            return ResponseEntity.ok(authenticationService.changePassword(token, request));
+            return ResponseEntity.ok(authenticationService.changePassword(token.substring(7), request));
         } catch (CompromisedPasswordException e) {
             return ResponseEntity.ok(Message.builder()
                     .message(ErrorCodes.E1001.getValue())

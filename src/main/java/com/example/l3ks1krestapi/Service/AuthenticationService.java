@@ -7,7 +7,6 @@ import com.example.l3ks1krestapi.DTO.Auth.Response.AuthenticationResponse;
 import com.example.l3ks1krestapi.DTO.Auth.Response.ChangePasswordResponse;
 import com.example.l3ks1krestapi.DTO.Auth.Response.RegistrationResponse;
 import com.example.l3ks1krestapi.DTO.Auth.Response.RevokeResponse;
-import com.example.l3ks1krestapi.DTO.Message;
 import com.example.l3ks1krestapi.Exceptions.CompromisedPasswordException;
 import com.example.l3ks1krestapi.Exceptions.InvalidPasswordLengthException;
 import com.example.l3ks1krestapi.Exceptions.UserExistsException;
@@ -85,7 +84,7 @@ public class AuthenticationService {
     }
 
     public RevokeResponse revokeToken(String token) throws NoSuchAlgorithmException {
-        MessageDigest messageDigest = MessageDigest.getInstance("SHA3-256");;
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA3-256");
         byte[] digest = messageDigest.digest(token.substring(7).getBytes());
         String tokenDigest = new BigInteger(1, digest).toString(16);
         revokedTokenRepository.save(RevokedToken.builder().revokedTokenHash(tokenDigest).build());

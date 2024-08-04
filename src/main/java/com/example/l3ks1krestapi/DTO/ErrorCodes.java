@@ -8,7 +8,8 @@ public enum ErrorCodes {
     E1001( "Password compromised"),
     E1002("Invalid password length"),
     E1003("User already exists."),
-    E1004( "Token can't be revoked");
+    E1004( "Token can't be revoked"),
+    E1005("User doesn't exist");
 
     private final String value;
     ErrorCodes(String value){

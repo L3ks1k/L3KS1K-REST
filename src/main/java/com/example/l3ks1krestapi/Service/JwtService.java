@@ -1,17 +1,12 @@
 package com.example.l3ks1krestapi.Service;
 
-import com.example.l3ks1krestapi.Exceptions.InvalidTokenException;
 import com.example.l3ks1krestapi.Repository.RevokedTokenRepository;
-import com.example.l3ks1krestapi.Security.KeyManager;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
 import java.math.BigInteger;
 import java.security.*;
 import java.util.Date;
@@ -56,23 +51,18 @@ public class JwtService {
             Map<String, Objects> extraClaims,
             UserDetails userDetails
     ){
-        try {
-            return Jwts.builder()
+        return Jwts.builder()
                     .setHeaderParam("typ","JWT")
                     .setClaims(extraClaims)
-                    .claim("jti", SecureRandom.getInstanceStrong().nextLong())
                     .setSubject(userDetails.getUsername())
                     .setIssuer("L3KS1K")
                     .setIssuedAt(new Date(System.currentTimeMillis()))
-                    .setExpiration(new Date(System.currentTimeMillis() * 1000 * 60 * 60 * 180)) // 180 days
+                    .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 180)) // 180 days
                     .signWith(privateKey, SignatureAlgorithm.ES512)
                     .compact();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
     }
     private boolean isRevoked(String token){
-        MessageDigest digest = null;
+        MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA3-256");
         } catch (NoSuchAlgorithmException e){

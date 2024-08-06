@@ -1,0 +1,15 @@
+services:
+  api:
+    image: 'docker-spring-boot-postgres:latest'
+    build:
+      context: .
+    container_name: api
+    depends_on:
+      - db
+    ports:
+      - "2137:2137"
+  db:
+    image: postgres
+    container_name: db
+    environment:
+      - POSTGRES_PASSWORD=admin

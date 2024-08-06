@@ -32,10 +32,7 @@ public class KeyManager {
     }
 
     public static PublicKey loadPublicKey(String publicKeyFilename) throws Exception{
-        URI uri = ClassLoader.getSystemResource(publicKeyFilename).toURI();
-        String pathStr = Paths.get(uri).toString();
-        Path path = Paths.get(pathStr);
-        File file = new File(pathStr);
+        File file = new File(publicKeyFilename);
         DataInputStream dis = new DataInputStream(new FileInputStream(file));
         byte[] publicKeyBytes = new byte[(int)file.length()];
         dis.read(publicKeyBytes);
@@ -45,9 +42,7 @@ public class KeyManager {
         return keyFactory.generatePublic(publicSpec);
     }
     public static PrivateKey loadPrivateKey(String privateKeyFilename) throws Exception{
-        URI uri = ClassLoader.getSystemResource(privateKeyFilename).toURI();
-        String pathStr = Paths.get(uri).toString();
-        File file = new File(pathStr);
+        File file = new File(privateKeyFilename);
         DataInputStream dis = new DataInputStream(new FileInputStream(file));
         byte[] privKeyBytes = new byte[(int)file.length()];
         dis.read(privKeyBytes);

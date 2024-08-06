@@ -1,5 +1,11 @@
 # L3KS1K - REST API Repository
 
+## Running REST API
+
+```
+docker compose up
+```
+
 ## Data flow diagram
 
 ![image](https://github.com/L3ks1k/L3KS1K-REST/assets/114097246/4cbbbb66-a905-48fe-9bba-c5d7adb10b31)

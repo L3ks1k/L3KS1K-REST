@@ -10,8 +10,10 @@ import com.example.l3ks1krestapi.DTO.Auth.Response.RevokeResponse;
 import com.example.l3ks1krestapi.Exceptions.CompromisedPasswordException;
 import com.example.l3ks1krestapi.Exceptions.InvalidPasswordLengthException;
 import com.example.l3ks1krestapi.Exceptions.UserExistsException;
+import com.example.l3ks1krestapi.Model.OnetimePrekey;
 import com.example.l3ks1krestapi.Model.RevokedToken;
 import com.example.l3ks1krestapi.Model.User;
+import com.example.l3ks1krestapi.Repository.OnetimePrekeyRepository;
 import com.example.l3ks1krestapi.Repository.RevokedTokenRepository;
 import com.example.l3ks1krestapi.Repository.UserRepository;
 import com.example.l3ks1krestapi.Security.PasswordHandler;
@@ -36,6 +38,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final RevokedTokenRepository revokedTokenRepository;
     private final PasswordHandler passwordHandler = new PasswordHandler();
+    private final OnetimePrekeyRepository onetimePrekeyRepository;
     public RegistrationResponse register(RegistrationRequest request){
         String password = passwordHandler.removeRedundantSpaces(request.getPassword());
         if (userRepository.findByEmail(request.getEmail()).isPresent()){
@@ -54,8 +57,18 @@ public class AuthenticationService {
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .identityKey(request.getIdentityKey())
+                .signedIdentityKey(request.getSignedPrekey())
                 .build();
         userRepository.save(user);
+        for (String opk : request.getOneTimePrekeys()){
+            System.out.println(opk);
+            var onetimeprekey = OnetimePrekey.builder()
+                    .oneTimePrekey(opk)
+                    .user(user)
+                    .build();
+            onetimePrekeyRepository.save(onetimeprekey);
+        }
         return RegistrationResponse.builder()
                 .username(user.getUsername())
                 .uuid(user.getUuid().toString())

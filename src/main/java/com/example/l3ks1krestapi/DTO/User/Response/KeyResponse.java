@@ -1,5 +1,4 @@
-package com.example.l3ks1krestapi.DTO.Auth.Request;
-
+package com.example.l3ks1krestapi.DTO.User.Response;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,13 +7,11 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegistrationRequest {
-    private String username;
-    private String email;
-    private String password;
+@Builder
+public class KeyResponse {
+    private String UUID;
     private String identityKey;
     private String signedPrekey;
     private List<String> oneTimePrekeys;

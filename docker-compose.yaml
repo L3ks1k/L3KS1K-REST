@@ -13,3 +13,5 @@ services:
     container_name: db
     environment:
       - POSTGRES_PASSWORD=admin
+    ports:
+      - "5433:5432"

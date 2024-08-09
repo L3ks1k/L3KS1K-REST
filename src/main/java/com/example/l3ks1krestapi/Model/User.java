@@ -18,7 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"email","uuid","username"}), name = "users")
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"email","uuid","username","identityKey"}), name = "users")
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

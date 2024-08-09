@@ -35,4 +35,16 @@ public class UserController {
                     .build());
         }
     }
+
+    @GetMapping("/keys/{user}")
+    public ResponseEntity<?> getKeys(@PathVariable String user){
+        try{
+            return ResponseEntity.ok(userService.getKeys(user));
+        } catch (RuntimeException e){
+            return ResponseEntity.ok(Message.builder()
+                    .message(ErrorCodes.E1005.getValue())
+                    .errorCode(ErrorCodes.E1005.name())
+                    .build());
+        }
+    }
 }

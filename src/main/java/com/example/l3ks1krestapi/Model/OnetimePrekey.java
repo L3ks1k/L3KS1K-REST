@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "onetimeprekeys", uniqueConstraints = @UniqueConstraint(columnNames = {"id"}))
 public class OnetimePrekey {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ManyToOne
     @JoinColumn(name = "userID")
